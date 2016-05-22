@@ -1,28 +1,49 @@
 require 'test_helper'
 
 class TheChat::MessageTest < Minitest::Test
-  def user
-    @user ||=
+  def author
+    @author ||=
       begin
-        user = TheChat::User.new 'name' => 'name'
-        user.password = 'name'
-        user.save
-        user
+        author = TheChat::User.new 'name' => 'name'
+        author.password = 'name'
+        author.save
+        author
+      end
+  end
+
+  def recipient
+    @recipient ||=
+      begin
+        recipient = TheChat::User.new 'name' => 'recipient'
+        recipient.password = 'recipient'
+        recipient.save
+        recipient
       end
   end
 
   def test_doesnt_save_without_body
     msg = TheChat::Message.new(
       'body' => nil,
-      'user_id' => user.id
+      'author_id' => author.id,
+      'recipient_id' => recipient.id
     )
     refute_predicate msg, :persisted?
   end
 
-  def test_doesnt_save_without_user_id
+  def test_doesnt_save_without_author_id
     msg = TheChat::Message.new(
       'body' => 'message!',
-      'user_id' => nil
+      'author_id' => nil,
+      'recipient_id' => recipient.id
+    )
+    refute_predicate msg, :persisted?
+  end
+
+  def test_doesnt_save_without_recipient_id
+    msg = TheChat::Message.new(
+      'body' => 'message!',
+      'author_id' => author.id,
+      'recipient_id' => nil
     )
     refute_predicate msg, :persisted?
   end
@@ -32,7 +53,8 @@ class TheChat::MessageTest < Minitest::Test
 
     msg = TheChat::Message.new(
       'body' => 'message!',
-      'user_id' => user.id
+      'author_id' => author.id,
+      'recipient_id' => recipient.id
     )
     msg.save
     assert_predicate msg, :persisted?
@@ -40,5 +62,17 @@ class TheChat::MessageTest < Minitest::Test
     Time.stub(:now, time) do
       assert_equal Time.now.to_s, msg.created_at.to_s
     end
+  end
+
+  def test_author
+    msg = TheChat::Message.new(
+      'body' => 'message!',
+      'author_id' => author.id,
+      'recipient_id' => recipient.id
+    )
+    msg.save
+
+    assert_equal author, msg.author
+    assert_equal recipient, msg.recipient
   end
 end
