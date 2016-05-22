@@ -26,7 +26,7 @@ class TheChat::APITest < ApiTest
   end
 
   def test_unauthorized_by_default
-    get '/me' do |response|
+    get '/me/info' do |response|
       assert_predicate response, :unauthorized?
     end
   end
@@ -34,7 +34,7 @@ class TheChat::APITest < ApiTest
   def test_me
     basic_authorize username, pass
 
-    get '/me' do |response|
+    get '/me/info' do |response|
       assert_predicate response, :ok?
       assert_equal username, response.json['name']
     end
@@ -43,8 +43,26 @@ class TheChat::APITest < ApiTest
   def test_all_users
     basic_authorize username, pass
 
-    get '/all' do |response|
+    get '/me/all' do |response|
       assert_equal other_names.count + 1, response.json.count
+    end
+  end
+
+  def test_register
+    name = 'juke'
+    assert_nil TheChat::User.first('name' => name)
+    post '/register', name: name, password: name do |response|
+      assert_predicate response, :created?
+      refute_nil TheChat::User.first('name' => name)
+    end
+  end
+
+  def test_register_with_wrong_params
+    name = 'juke'
+    assert_nil TheChat::User.first('name' => name)
+    post '/register', name: name, password: nil do |response|
+      refute_predicate response, :created?
+      assert_nil TheChat::User.first('name' => name)
     end
   end
 end
