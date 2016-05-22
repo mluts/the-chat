@@ -10,12 +10,12 @@ module TheChat
         @tables = Hash.new { |h,k| h[k.to_s] = {} }
       end
 
-      def save(table, attributes)
+      def save(table, attributes, id = nil)
         if table.nil?
           raise SaveError, "No table provided"
         else
-          id = SecureRandom.uuid
-          @tables[table.to_s][id] = attributes.to_h
+          id ||= SecureRandom.uuid
+          @tables[table.to_s][id.to_s] = attributes.to_h
           id
         end
       end

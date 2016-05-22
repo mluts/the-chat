@@ -115,4 +115,20 @@ class TheChat::MessageTest < Minitest::Test
 
     assert_equal [msgs[0], msgs[2]], TheChat::Message.unread(author.id)
   end
+
+  def test_as_json
+    time = Time.now
+    attrs = {
+      'body' => 'message',
+      'author_id' => author.id,
+      'recipient_id' => recipient.id
+    }
+    msg = TheChat::Message.new(attrs)
+    Time.stub(:now, time) { msg.save }
+    assert_equal attrs.merge(
+      'created_at' => time,
+      'read' => false,
+      'id' => msg.id
+    ), msg.as_json
+  end
 end

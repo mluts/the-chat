@@ -38,6 +38,18 @@ module DatabaseAdapterTest
     assert_equal attrs, adapter.find(table, id)
   end
 
+  def test_save_allows_override_record
+    table = 'users'
+    attrs = {
+      'foo' => 'bar',
+      'bar' => 'baz'
+    }
+
+    id = adapter.save(table, attrs)
+    adapter.save(table, {}, id)
+    assert_equal({}, adapter.find(table, id))
+  end
+
   def test_delete_deletes_the_record
     table = 'users'
     attrs = {

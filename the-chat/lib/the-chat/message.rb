@@ -31,6 +31,13 @@ module TheChat
       save
     end
 
+    def as_json
+      super.merge(
+        'read' => !!read,
+        'id' => id
+      )
+    end
+
     def save
       self.created_at ||= Time.now
 

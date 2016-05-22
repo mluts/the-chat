@@ -57,7 +57,7 @@ module TheChat
     attr_reader :attributes, :id
 
     def save
-      @id = adapter.save(table_name, attributes)
+      @id = adapter.save(table_name, attributes, @id)
     end
 
     def delete
@@ -65,7 +65,7 @@ module TheChat
     end
 
     def persisted?
-      !!adapter.find(table_name, id)
+      id && adapter.find(table_name, id)
     end
 
     def reload
@@ -75,6 +75,10 @@ module TheChat
 
     def ==(other)
       other.is_a?(self.class) && id == other.id
+    end
+
+    def as_json
+      @attributes.dup
     end
 
     private

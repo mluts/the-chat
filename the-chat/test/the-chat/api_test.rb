@@ -14,9 +14,9 @@ class TheChat::APITest < ApiTest
   end
 
   def setup
-    user = TheChat::User.new('name' => username)
-    user.password = pass
-    user.save
+    @user = TheChat::User.new('name' => username)
+    @user.password = pass
+    @user.save
 
     other_names.each do |name|
       user = TheChat::User.new('name' => name)
@@ -63,6 +63,49 @@ class TheChat::APITest < ApiTest
     post '/register', name: name, password: nil do |response|
       refute_predicate response, :created?
       assert_nil TheChat::User.first('name' => name)
+    end
+  end
+
+  def test_unread
+    msgs = 4.times.map do
+      msg = TheChat::Message.new(
+        'body' => 'msg',
+        'recipient_id' => @user.id,
+        'author_id' => @user.id
+      )
+      msg.save
+      msg
+    end
+    msgs[2..-1].each(&:mark_as_read)
+
+    basic_authorize username, pass
+    get '/me/unread' do |response|
+      assert_predicate response, :ok?
+      assert_equal 2, response.json.count
+      assert_equal 'msg', response.json[0]['body']
+      assert_equal false, response.json[0]['read']
+    end
+  end
+
+  def test_messages
+    msgs = 4.times.map do |i|
+      msg = TheChat::Message.new(
+        'body' => "msg",
+        'recipient_id' => @user.id,
+        'author_id' => @user.id
+      )
+      msg.save
+      msg
+    end
+    msgs[2..-1].each(&:mark_as_read)
+
+    basic_authorize username, pass
+    get '/me/messages' do |response|
+      assert_predicate response, :ok?
+      assert_equal 4, response.json.count
+      assert_equal 'msg', response.json[0]['body']
+      assert_equal false, response.json[0]['read']
+      assert_equal true, response.json[2]['read']
     end
   end
 end

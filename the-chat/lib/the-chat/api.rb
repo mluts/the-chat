@@ -35,8 +35,15 @@ module TheChat
           {name: user.name}
         end
       end
-    end
 
+      get :unread do
+        Message.unread(current_user.id).map(&:as_json)
+      end
+
+      get :messages do
+        Message.select('recipient_id' => current_user.id).map(&:as_json)
+      end
+    end
 
     params do
       requires :name, type: String
