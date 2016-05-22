@@ -9,7 +9,13 @@ module TheChat
       #   * #first(table, attributes)
       #   * #save(table, id, attributes)
       #   * #destroy(table, id, attributes)
-      attr_accessor :adapter
+      def adapter
+        @@adapter
+      end
+
+      def adapter=(value)
+        @@adapter = value
+      end
 
       def table_name
         name
@@ -37,14 +43,10 @@ module TheChat
           define_method(:"#{attr}=") { |val| @attributes[attr.to_s] = val }
         end
       end
-
-      def inherited(other)
-        other.adapter = self.adapter
-      end
     end
 
     def initialize(attributes = {}, id = nil)
-      @attributes = attributes
+      @attributes = attributes.map { |k,v| [k.to_s,v.to_s] }.to_h
       @id = id
     end
 
@@ -54,12 +56,16 @@ module TheChat
       @id = adapter.save(table_name, attributes)
     end
 
-    def destroy
-      @adapter.destroy(table_name, id)
+    def delete
+      adapter.delete(table_name, id)
+    end
+
+    def persisted?
+      !!adapter.find(table_name, id)
     end
 
     def reload
-      @attributes = adapter.find(table_name, id).to_h
+      @attributes.replace adapter.find(table_name, id).to_h
       self
     end
 

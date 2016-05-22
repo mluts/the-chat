@@ -56,6 +56,10 @@ module TheChat
         end
       end
 
+      def reset
+        @tables.clear
+      end
+
       private
 
       def compare(attributes, record)

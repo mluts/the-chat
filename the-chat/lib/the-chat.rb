@@ -1,2 +1,3 @@
 require 'the-chat/database_adapter/memory'
-require 'the-chat/model'
+require 'the-chat/user'
+require 'the-chat/api'

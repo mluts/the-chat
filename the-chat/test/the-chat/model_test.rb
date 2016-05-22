@@ -23,4 +23,18 @@ class TheChat::ModelTest < Minitest::Test
     assert_equal [record], User.select(record.attributes)
     assert_equal record, User.first(record.attributes)
   end
+
+  def test_persisted
+    record = User.new
+    refute_predicate record, :persisted?
+
+    record.save
+    assert_predicate record, :persisted?
+
+    record.delete
+    refute_predicate record, :persisted?
+
+    record.save
+    assert_predicate record, :persisted?
+  end
 end

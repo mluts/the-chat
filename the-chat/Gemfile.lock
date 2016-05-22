@@ -11,7 +11,9 @@ GEM
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
+    bcrypt (3.1.10)
     builder (3.2.2)
+    coderay (1.1.1)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
     daemons (1.2.3)
@@ -36,15 +38,23 @@ GEM
     i18n (0.7.0)
     ice_nine (0.11.2)
     json (1.8.3)
+    method_source (0.8.2)
     minitest (5.9.0)
     multi_json (1.12.1)
     multi_xml (0.5.5)
     mustermann19 (0.4.3)
       enumerable-lazy
+    pry (0.10.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
     rack (1.6.4)
     rack-accept (0.4.5)
       rack (>= 0.4)
+    rack-test (0.6.3)
+      rack (>= 1.0)
     rake (11.1.2)
+    slop (3.6.0)
     thin (1.6.4)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0, >= 1.0.4)
@@ -62,9 +72,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bcrypt
   faker
   grape
   minitest
+  pry
+  rack-test
   rake
   thin
 
