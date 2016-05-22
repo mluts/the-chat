@@ -51,15 +51,15 @@ class TheChat::MessageTest < Minitest::Test
   def test_persistence
     time = Time.now
 
-    msg = TheChat::Message.new(
-      'body' => 'message!',
-      'author_id' => author.id,
-      'recipient_id' => recipient.id
-    )
-    msg.save
-    assert_predicate msg, :persisted?
-
     Time.stub(:now, time) do
+      msg = TheChat::Message.new(
+        'body' => 'message!',
+        'author_id' => author.id,
+        'recipient_id' => recipient.id
+      )
+      msg.save
+      assert_predicate msg, :persisted?
+
       assert_equal Time.now.to_s, msg.created_at.to_s
     end
   end
@@ -74,5 +74,45 @@ class TheChat::MessageTest < Minitest::Test
 
     assert_equal author, msg.author
     assert_equal recipient, msg.recipient
+  end
+
+  def test_read
+    msg = TheChat::Message.new(
+      'body' => 'message!',
+      'author_id' => author.id,
+      'recipient_id' => recipient.id
+    )
+
+    refute_predicate msg, :read?
+    msg.mark_as_read
+    assert_predicate msg, :read?
+  end
+
+  def test_unread
+    msgs = 4.times.map do
+      msg = TheChat::Message.new(
+        'body' => 'message!',
+        'author_id' => author.id,
+        'recipient_id' => recipient.id
+      )
+      msg.save
+      msg
+    end
+
+    assert_equal msgs, TheChat::Message.unread
+  end
+
+  def test_unread_with_recipient
+    msgs = 4.times.map do |i|
+      msg = TheChat::Message.new(
+        'body' => 'message!',
+        'author_id' => author.id,
+        'recipient_id' => i%2==0 ? author.id : recipient.id
+      )
+      msg.save
+      msg
+    end
+
+    assert_equal [msgs[0], msgs[2]], TheChat::Message.unread(author.id)
   end
 end

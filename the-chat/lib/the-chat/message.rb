@@ -3,7 +3,16 @@ module TheChat
     def_attr :body,
              :author_id,
              :recipient_id,
+             :read,
              :created_at
+
+    class << self
+      def unread(recipient = nil)
+        query = { 'read' => nil }
+        query['recipient_id'] = recipient if recipient
+        select(query)
+      end
+    end
 
     def author
       User.find(author_id)
@@ -11,6 +20,15 @@ module TheChat
 
     def recipient
       User.find(recipient_id)
+    end
+
+    def read?
+      read
+    end
+
+    def mark_as_read
+      self.read = true
+      save
     end
 
     def save

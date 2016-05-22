@@ -63,7 +63,14 @@ module TheChat
       private
 
       def compare(attributes, record)
-        attributes.all? { |k,v| record[k.to_s].to_s == v.to_s }
+        attributes.all? do |k,v|
+          val = record[k.to_s]
+          if v.is_a?(Enumerable)
+            v.any? { |comp| val == comp }
+          else
+            record[k.to_s].to_s == v.to_s
+          end
+        end
       end
     end
   end

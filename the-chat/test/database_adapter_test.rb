@@ -91,6 +91,12 @@ module DatabaseAdapterTest
       id3 => attrs3
     }, adapter.select(table, 'bar' => 'baz'))
 
+    assert_equal({
+      id1 => attrs,
+      id2 => attrs2,
+      id3 => attrs3
+    }, adapter.select(table, 'foo' => ['bar', '1', '2']))
+
     assert_equal({}, adapter.select(table, 'foo' => '4'))
   end
 
