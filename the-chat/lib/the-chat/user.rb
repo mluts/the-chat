@@ -4,6 +4,7 @@ require 'bcrypt'
 module TheChat
   class User < Model
     include BCrypt
+
     def_attr :name, :encrypted_password
 
     attr_accessor :password
