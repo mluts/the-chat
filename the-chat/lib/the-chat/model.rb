@@ -3,12 +3,6 @@ require 'securerandom'
 module TheChat
   class Model
     class << self
-      # Should implement:
-      #   * #find(table, id)
-      #   * #select(table, attributes)
-      #   * #first(table, attributes)
-      #   * #save(table, id, attributes)
-      #   * #destroy(table, id, attributes)
       def adapter
         @@adapter
       end

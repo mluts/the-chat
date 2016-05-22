@@ -108,4 +108,14 @@ class TheChat::APITest < ApiTest
       assert_equal true, response.json[2]['read']
     end
   end
+
+  def test_send
+    basic_authorize username, pass
+
+    post '/me/send_message', recipient: @user.name, body: 'hello!' do |response|
+      assert_predicate response, :created?
+      assert_equal 'hello!',
+                   TheChat::Message.unread(@user.id).last.body
+    end
+  end
 end

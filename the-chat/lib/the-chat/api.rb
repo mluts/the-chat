@@ -43,6 +43,29 @@ module TheChat
       get :messages do
         Message.select('recipient_id' => current_user.id).map(&:as_json)
       end
+
+      params do
+        requires :recipient, type: String
+        requires :body, type: String
+      end
+      post :send_message do
+        user = User.first(name: params[:recipient])
+        if user.nil?
+          status :not_found
+          {
+            error: "User #{params[:recipient].inspect} doesn't exist"
+          }
+        else
+          message = Message.new(
+            'body'          => params[:body],
+            'author_id'     => current_user.id,
+            'recipient_id'  => user.id
+          )
+          message.save
+          status :created
+          {status: 'ok'}
+        end
+      end
     end
 
     params do
@@ -55,10 +78,10 @@ module TheChat
       user.save
 
       if user.persisted?
-        status 201
+        status :created
         { status: 'ok' }
       else
-        status 400
+        status :bad_request
         { error: "Username #{user.name.inspect} has already been taken" }
       end
     end
