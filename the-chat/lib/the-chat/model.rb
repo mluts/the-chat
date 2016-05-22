@@ -32,6 +32,10 @@ module TheChat
         end
       end
 
+      def all
+        select({})
+      end
+
       def first(query)
         id, attrs = adapter.first(table_name, query)
         id && new(attrs, id)

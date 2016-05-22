@@ -1,9 +1,11 @@
+$VERBOSE = nil
 $: << File.expand_path('../../lib', __FILE__)
 require 'bundler/setup'
 require 'the-chat'
 require 'faker'
 require 'rack/test'
 require 'minitest/autorun'
+require 'minitest/mock'
 require 'pry'
 
 TheChat::Model.adapter = TheChat::DatabaseAdapter::Memory.new

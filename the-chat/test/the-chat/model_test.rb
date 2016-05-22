@@ -37,4 +37,17 @@ class TheChat::ModelTest < Minitest::Test
     record.save
     assert_predicate record, :persisted?
   end
+
+  def test_all
+    names = %w(name1 name2 name3)
+
+    names.each do |name|
+      user = User.new 'name' => name
+      user.password = name
+      user.save
+    end
+
+    assert_equal 3, User.all.count
+    assert_equal names, User.all.map(&:name)
+  end
 end

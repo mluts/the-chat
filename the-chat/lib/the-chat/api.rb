@@ -28,5 +28,11 @@ module TheChat
     get :me do
       { name: current_user.name }
     end
+
+    get :all do
+      User.all.map do |user|
+        {name: user.name}
+      end
+    end
   end
 end
