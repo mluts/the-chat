@@ -30,8 +30,8 @@ module TheChat
 
       def select(table, attributes)
         if table
-          @tables[table.to_s].each_with_object([]) do |(_, record), acc|
-            acc << record if compare(attributes, record)
+          @tables[table.to_s].select do |_, record|
+            compare(attributes, record)
           end
         else
           raise FindError, "No table provided"
@@ -40,11 +40,12 @@ module TheChat
 
       def first(table, attributes)
         if table
-          @tables[table.to_s].find { |_, record| compare(attributes, record) }
+          @tables[table.to_s].find do |_, record|
+            compare(attributes, record)
+          end
         else
           raise FindError, "No table provided"
         end
-
       end
 
       def delete(table, id)

@@ -68,25 +68,55 @@ module DatabaseAdapterTest
       'foo' => 'bar',
       'bar' => 'baz'
     }
-    adapter.save(table, attrs)
-    adapter.save(table, 'foo' => '1', 'bar' => 'baz')
-    adapter.save(table, 'foo' => '2', 'bar' => 'baz')
 
-    assert_equal [attrs], adapter.select(table, 'foo' => 'bar')
-    assert_equal([{
+    attrs2 = {
       'foo' => '1', 'bar' => 'baz'
-    }], adapter.select(table, 'foo' => '1'))
-    assert_equal([{
+    }
+
+    attrs3 = {
       'foo' => '2', 'bar' => 'baz'
-    }], adapter.select(table, 'foo' => '2'))
+    }
 
-    assert_equal([
-      attrs,
-      {'foo' => '1', 'bar' => 'baz'},
-      {'foo' => '2', 'bar' => 'baz'}
-    ], adapter.select(table, 'bar' => 'baz'))
+    id1 = adapter.save(table, attrs)
+    id2 = adapter.save(table, attrs2)
+    id3 = adapter.save(table, attrs3)
 
-    assert_equal [], adapter.select(table, 'foo' => '4')
+    assert_equal({ id1 => attrs  }, adapter.select(table, 'foo' => 'bar'))
+    assert_equal({ id2 => attrs2 }, adapter.select(table, 'foo' => '1'))
+    assert_equal({ id3 => attrs3 }, adapter.select(table, 'foo' => '2'))
+
+    assert_equal({
+      id1 => attrs,
+      id2 => attrs2,
+      id3 => attrs3
+    }, adapter.select(table, 'bar' => 'baz'))
+
+    assert_equal({}, adapter.select(table, 'foo' => '4'))
   end
 
+  def test_first_finds_first_matched_record
+    table = 'users'
+    attrs = {
+      'foo' => 'bar',
+      'bar' => 'baz'
+    }
+
+    attrs2 = {
+      'foo' => '1', 'bar' => 'baz'
+    }
+
+    attrs3 = {
+      'foo' => '2', 'bar' => 'baz'
+    }
+
+    id1 = adapter.save(table, attrs)
+    id2 = adapter.save(table, attrs2)
+    id3 = adapter.save(table, attrs3)
+
+    assert_equal [id1, attrs], adapter.first(table, 'foo' => 'bar')
+    assert_equal [id2, attrs2], adapter.first(table, 'foo' => '1')
+    assert_equal [id3, attrs3], adapter.first(table, 'foo' => '2')
+
+    assert_equal nil, adapter.first(table, 'foo' => '4')
+  end
 end

@@ -13,10 +13,14 @@ class TheChat::ModelTest < Minitest::Test
     @password ||= Faker::Lorem.word
   end
 
-  # def test_it_can_be_saved
-  #   record = User.new
-  #   record.name = sample_name
-  #   record.password = sample_password
-  #   record.save
-  # end
+  def test_it_can_be_saved
+    record = User.new
+    record.name = sample_name
+    record.password = sample_password
+    record.save
+
+    assert_equal record, User.find(record.id)
+    assert_equal [record], User.select(record.attributes)
+    assert_equal record, User.first(record.attributes)
+  end
 end
