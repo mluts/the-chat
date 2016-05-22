@@ -21,3 +21,9 @@ class ApiTest < Minitest::Test
     TheChat::API
   end
 end
+
+class Rack::Response
+  def json
+    JSON.parse(body)
+  end
+end

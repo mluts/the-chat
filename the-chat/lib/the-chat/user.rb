@@ -8,11 +8,17 @@ module TheChat
 
     attr_accessor :password
 
-    def self.authorized?(name, pass)
-      user = first(name: name)
-      if user
-        user.password = pass
-        user.valid_password?
+    class << self
+      def authorize(name, pass)
+        user = first(name: name)
+        if user
+          user.password = pass
+          user.valid_password? && user
+        end
+      end
+
+      def authorized?(name, pass)
+        !!authorize(name, pass)
       end
     end
 
