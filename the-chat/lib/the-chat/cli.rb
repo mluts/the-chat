@@ -33,6 +33,7 @@ module TheChat
       @rack_options = {
         app: TheChat::CLI.app
       }
+      TheChat::Model.adapter = TheChat::DatabaseAdapter::Memory.new
       parse!(@argv)
       Rack::Server.start(@rack_options)
     end
