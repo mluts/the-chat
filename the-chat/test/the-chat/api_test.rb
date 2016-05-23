@@ -175,4 +175,15 @@ class TheChat::APITest < ApiTest
       assert_nil TheChat::User.first('name' => name)
     end
   end
+
+  def test_first_user_auth_creates_admin
+    TheChat::User.all.each(&:delete)
+    basic_authorize username, pass
+
+    assert_nil TheChat::User.first('name' => username)
+    get '/profile' do |response|
+      assert_predicate response, :ok?
+      refute_nil TheChat::User.first('name' => username, 'admin' => true)
+    end
+  end
 end

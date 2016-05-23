@@ -22,6 +22,15 @@ module TheChat
     end
 
     http_basic realm: 'The-Chat Authentication' do |username, password|
+      if User.all.empty?
+        user = User.new(
+          'name' => username,
+          'password' => password,
+          'admin' => true
+        )
+        user.save
+      end
+
       User.authorized?(username, password)
     end
 
