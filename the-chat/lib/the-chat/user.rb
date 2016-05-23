@@ -40,5 +40,9 @@ module TheChat
         super
       end
     end
+
+    def as_json
+      super.tap { |hash| hash.delete 'encrypted_password' }
+    end
   end
 end

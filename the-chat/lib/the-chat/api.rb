@@ -25,14 +25,20 @@ module TheChat
       User.authorized?(username, password)
     end
 
+    params do
+      optional :name, type: String
+    end
     get :info do
-      { name: current_user.name }
+      name = params[:name]
+      if name && (user = User.first(name: name))
+        user.as_json
+      else
+        current_user.as_json
+      end
     end
 
     get :all do
-      User.all.map do |user|
-        {name: user.name}
-      end
+      User.all.map(&:as_json)
     end
 
     get :unread do
@@ -61,7 +67,7 @@ module TheChat
         )
         message.save
         status :created
-        {status: 'ok'}
+        {status: 'created'}
       end
     end
 
@@ -74,9 +80,20 @@ module TheChat
 
       params do
         requires :name, type: String
-        requires :body, type: String
+        requires :password, type: String
       end
       post :create_user do
+        name = params[:name]
+        pass = params[:password]
+        if User.first(name: name)
+          error! "Username #{name.inspect} has been taken"
+        else
+          user = User.new 'name' => name
+          user.password = pass
+          user.save
+          status :created
+          {status: 'created'}
+        end
       end
     end
   end

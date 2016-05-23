@@ -62,4 +62,13 @@ class TheChat::UserTest < Minitest::Test
     assert_predicate TheChat::User.first('admin' => true),
                      :admin?
   end
+
+  def test_as_json
+    user = TheChat::User.new 'name' => 'name'
+    user.password = 'pass'
+    user.save
+    assert_equal({
+      'name' => 'name'
+    }, user.as_json)
+  end
 end

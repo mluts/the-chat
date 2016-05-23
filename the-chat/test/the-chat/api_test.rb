@@ -31,12 +31,19 @@ class TheChat::APITest < ApiTest
     end
   end
 
-  def test_me
+  def test_info
     basic_authorize username, pass
 
     get '/info' do |response|
       assert_predicate response, :ok?
       assert_equal username, response.json['name']
+    end
+
+    name = other_names.sample
+
+    get '/info', name: name do |response|
+      assert_predicate response, :ok?
+      assert_equal name, response.json['name']
     end
   end
 
@@ -104,6 +111,25 @@ class TheChat::APITest < ApiTest
 
     post '/send_message', recipient: username, body: 'hello!' do |response|
       assert_predicate response, :bad_request?
+    end
+  end
+
+  def test_create_user
+    new_user_name = 'juke'
+    new_user_pass = 'juke'
+    basic_authorize username, pass
+
+    post '/admin/create_user', name: new_user_name, password: new_user_pass do |response|
+      assert_predicate response, :forbidden?
+      assert_nil TheChat::User.first('name' => new_user_name)
+    end
+
+    @user.admin = true
+    @user.save
+
+    post '/admin/create_user', name: new_user_name, password: new_user_pass do |response|
+      assert_predicate response, :created?
+      refute_nil TheChat::User.first('name' => new_user_name)
     end
   end
 end
