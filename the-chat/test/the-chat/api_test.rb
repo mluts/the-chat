@@ -26,7 +26,7 @@ class TheChat::APITest < ApiTest
   end
 
   def test_unauthorized_by_default
-    get '/me/info' do |response|
+    get '/info' do |response|
       assert_predicate response, :unauthorized?
     end
   end
@@ -34,7 +34,7 @@ class TheChat::APITest < ApiTest
   def test_me
     basic_authorize username, pass
 
-    get '/me/info' do |response|
+    get '/info' do |response|
       assert_predicate response, :ok?
       assert_equal username, response.json['name']
     end
@@ -43,26 +43,8 @@ class TheChat::APITest < ApiTest
   def test_all_users
     basic_authorize username, pass
 
-    get '/me/all' do |response|
+    get '/all' do |response|
       assert_equal other_names.count + 1, response.json.count
-    end
-  end
-
-  def test_register
-    name = 'juke'
-    assert_nil TheChat::User.first('name' => name)
-    post '/register', name: name, password: name do |response|
-      assert_predicate response, :created?
-      refute_nil TheChat::User.first('name' => name)
-    end
-  end
-
-  def test_register_with_wrong_params
-    name = 'juke'
-    assert_nil TheChat::User.first('name' => name)
-    post '/register', name: name, password: nil do |response|
-      refute_predicate response, :created?
-      assert_nil TheChat::User.first('name' => name)
     end
   end
 
@@ -79,7 +61,7 @@ class TheChat::APITest < ApiTest
     msgs[2..-1].each(&:mark_as_read)
 
     basic_authorize username, pass
-    get '/me/unread' do |response|
+    get '/unread' do |response|
       assert_predicate response, :ok?
       assert_equal 2, response.json.count
       assert_equal 'msg', response.json[0]['body']
@@ -100,7 +82,7 @@ class TheChat::APITest < ApiTest
     msgs[2..-1].each(&:mark_as_read)
 
     basic_authorize username, pass
-    get '/me/messages' do |response|
+    get '/messages' do |response|
       assert_predicate response, :ok?
       assert_equal 4, response.json.count
       assert_equal 'msg', response.json[0]['body']
@@ -111,11 +93,17 @@ class TheChat::APITest < ApiTest
 
   def test_send
     basic_authorize username, pass
+    other_user = TheChat::User.all.last
+    refute_equal other_user.id, @user.id
 
-    post '/me/send_message', recipient: @user.name, body: 'hello!' do |response|
+    post '/send_message', recipient: other_user.name, body: 'hello!' do |response|
       assert_predicate response, :created?
       assert_equal 'hello!',
-                   TheChat::Message.unread(@user.id).last.body
+                   TheChat::Message.unread(other_user.id).last.body
+    end
+
+    post '/send_message', recipient: username, body: 'hello!' do |response|
+      assert_predicate response, :bad_request?
     end
   end
 end

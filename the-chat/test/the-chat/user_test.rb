@@ -52,4 +52,14 @@ class TheChat::UserTest < Minitest::Test
     refute TheChat::User.authorized?('name', 'passd')
     refute TheChat::User.authorized?('named', 'pass')
   end
+
+  def test_admin
+    user = TheChat::User.new('name' => 'name')
+    user.password = 'pass'
+    refute_predicate user, :admin?
+    user.admin = true
+    user.save
+    assert_predicate TheChat::User.first('admin' => true),
+                     :admin?
+  end
 end

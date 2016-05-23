@@ -5,7 +5,13 @@ module TheChat
   class User < Model
     include BCrypt
 
-    def_attr :name, :encrypted_password
+    def_attr :name,
+             :encrypted_password,
+             :admin
+
+    def admin?
+      !!admin
+    end
 
     attr_accessor :password
 
