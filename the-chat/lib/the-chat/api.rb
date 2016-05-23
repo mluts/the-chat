@@ -28,7 +28,7 @@ module TheChat
     params do
       optional :name, type: String
     end
-    get :info do
+    get :profile do
       name = params[:name]
       if name && (user = User.first(name: name))
         user.as_json
@@ -40,28 +40,31 @@ module TheChat
     params do
       requires :about, type: String
     end
-    put :info do
+    put :profile do
       current_user.about = params[:about]
       current_user.save
     end
 
-    get :all do
+    get :users do
       User.all.map(&:as_json)
     end
 
-    get :unread do
-      Message.unread(current_user.id).map(&:as_json)
+    params do
+      optional :unread, type: Boolean
     end
-
     get :messages do
-      Message.select('recipient_id' => current_user.id).map(&:as_json)
+      query = {
+        'recipient_id' => current_user.id
+      }
+      query['read'] = nil if params[:unread]
+      Message.select(query).map(&:as_json)
     end
 
     params do
       requires :recipient, type: String
       requires :body, type: String
     end
-    post :send_message do
+    post :messages do
       user = User.first(name: params[:recipient])
       if user.nil?
         error! "User #{params[:recipient].inspect} doesn't exist", :not_found
@@ -90,7 +93,7 @@ module TheChat
         requires :name, type: String
         requires :password, type: String
       end
-      post :create_user do
+      post :users do
         name = params[:name]
         pass = params[:password]
         if User.first(name: name)
