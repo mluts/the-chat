@@ -37,6 +37,14 @@ module TheChat
       end
     end
 
+    params do
+      requires :about, type: String
+    end
+    put :info do
+      current_user.about = params[:about]
+      current_user.save
+    end
+
     get :all do
       User.all.map(&:as_json)
     end

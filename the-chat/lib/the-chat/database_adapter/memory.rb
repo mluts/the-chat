@@ -15,7 +15,7 @@ module TheChat
           raise SaveError, "No table provided"
         else
           id ||= SecureRandom.uuid
-          @tables[table.to_s][id.to_s] = attributes.to_h
+          @tables[table.to_s][id.to_s] = attributes.dup.to_h
           id
         end
       end

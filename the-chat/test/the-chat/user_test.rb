@@ -72,4 +72,15 @@ class TheChat::UserTest < Minitest::Test
       'about' => 'about'
     }, user.as_json)
   end
+
+  def test_about
+    user = TheChat::User.new 'name' => 'name', 'password' => 'pass'
+    user.save
+
+    user = TheChat::User.first 'name' => 'name'
+    user.about = 'about'
+    user.save
+
+    assert_equal 'about', TheChat::User.first('name' => 'name').about
+  end
 end

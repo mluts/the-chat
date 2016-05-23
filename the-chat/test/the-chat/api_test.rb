@@ -132,4 +132,13 @@ class TheChat::APITest < ApiTest
       refute_nil TheChat::User.first('name' => new_user_name)
     end
   end
+
+  def test_update_info
+    basic_authorize username, pass
+    assert_nil @user.reload.about
+    put '/info', about: 'about' do |response|
+      assert_predicate response, :ok?
+      assert_equal 'about', @user.reload.about
+    end
+  end
 end
