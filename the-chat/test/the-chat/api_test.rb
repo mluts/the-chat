@@ -162,4 +162,17 @@ class TheChat::APITest < ApiTest
       assert_equal 'new-about', user.about
     end
   end
+
+  def test_delete_user
+    @user.admin = true
+    @user.save
+    basic_authorize username, pass
+    name = other_names.sample
+
+    refute_nil TheChat::User.first('name' => name)
+    delete '/admin/users', name: name do |response|
+      assert_predicate response, :ok?
+      assert_nil TheChat::User.first('name' => name)
+    end
+  end
 end

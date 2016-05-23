@@ -115,7 +115,7 @@ module TheChat
       end
       put :users do
         name = params[:name]
-        user = User.first('name' => name)
+        user = User.first 'name' => name
         if user
           user.name   = params[:new_name] if params[:new_name]
           user.about  = params[:about] if params[:about]
@@ -123,6 +123,21 @@ module TheChat
           user.save
           status 200
           {status: 'updated'}
+        else
+          error! "User #{name.inspect} not found", :not_found
+        end
+      end
+
+      params do
+        requires :name, type: String
+      end
+      delete :users do
+        name = params[:name]
+        user = User.first 'name' => name
+        if user
+          user.delete
+          status 200
+          {status: 'deleted'}
         else
           error! "User #{name.inspect} not found", :not_found
         end
