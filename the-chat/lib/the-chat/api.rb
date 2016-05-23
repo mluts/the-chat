@@ -21,7 +21,7 @@ module TheChat
       end
     end
 
-    http_basic do |username, password|
+    http_basic realm: 'The-Chat Authentication' do |username, password|
       User.authorized?(username, password)
     end
 
