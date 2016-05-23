@@ -44,7 +44,10 @@ module TheChat
     end
 
     def initialize(attributes = {}, id = nil)
-      @attributes = attributes.map { |k,v| [k.to_s,v.to_s] }.to_h
+      @attributes = {}
+      attributes.each do |attr, val|
+        send "#{attr}=", val
+      end
       @id = id
     end
 

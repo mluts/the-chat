@@ -7,7 +7,8 @@ module TheChat
 
     def_attr :name,
              :encrypted_password,
-             :admin
+             :admin,
+             :about
 
     def admin?
       !!admin

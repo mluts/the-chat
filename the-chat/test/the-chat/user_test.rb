@@ -64,11 +64,12 @@ class TheChat::UserTest < Minitest::Test
   end
 
   def test_as_json
-    user = TheChat::User.new 'name' => 'name'
+    user = TheChat::User.new 'name' => 'name', 'about' => 'about'
     user.password = 'pass'
     user.save
     assert_equal({
-      'name' => 'name'
+      'name' => 'name',
+      'about' => 'about'
     }, user.as_json)
   end
 end
