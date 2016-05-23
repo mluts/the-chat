@@ -83,4 +83,15 @@ class TheChat::UserTest < Minitest::Test
 
     assert_equal 'about', TheChat::User.first('name' => 'name').about
   end
+
+  def test_change_password
+    user = TheChat::User.new 'name' => 'name', 'password' => 'pass'
+    user.save
+    user.password = 'pass'
+    assert_predicate user, :valid_password?
+    user.password = 'new-pass'
+    user.save
+    user.password = 'new-pass'
+    assert_predicate user, :valid_password?
+  end
 end

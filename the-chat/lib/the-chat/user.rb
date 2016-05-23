@@ -35,7 +35,8 @@ module TheChat
     end
 
     def save
-      self.encrypted_password ||= Password.create(password) if password
+      self.encrypted_password = Password.create(password) if password
+      self.password = nil
 
       return if !persisted? && self.class.first('name' => name)
 

@@ -106,6 +106,27 @@ module TheChat
           {status: 'created'}
         end
       end
+
+      params do
+        requires :name, type: String
+        optional :new_name, type: String
+        optional :password, type: String
+        optional :about, type: String
+      end
+      put :users do
+        name = params[:name]
+        user = User.first('name' => name)
+        if user
+          user.name   = params[:new_name] if params[:new_name]
+          user.about  = params[:about] if params[:about]
+          user.password = params[:password] if params[:password]
+          user.save
+          status 200
+          {status: 'updated'}
+        else
+          error! "User #{name.inspect} not found", :not_found
+        end
+      end
     end
   end
 end

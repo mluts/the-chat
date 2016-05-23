@@ -141,4 +141,25 @@ class TheChat::APITest < ApiTest
       assert_equal 'about', @user.reload.about
     end
   end
+
+  def test_update_user
+    @user.admin = true
+    @user.save
+    basic_authorize username, pass
+
+    user = TheChat::User.first 'name' => other_names.sample
+    new_name = user.name + "_suffix"
+
+    put '/admin/users', name: user.name,
+                        new_name: new_name,
+                        password: 'new-pass',
+                        about: 'new-about' do |response|
+      assert_predicate response, :ok?
+      user = TheChat::User.first 'name' => new_name
+      refute_nil user
+      user.password = 'new-pass'
+      assert_predicate user, :valid_password?
+      assert_equal 'new-about', user.about
+    end
+  end
 end
